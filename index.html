@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>唐茵芷 · 作品集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=Noto+Sans+SC:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lenis@1.3.26/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root { --bg-light: #f6f5f1; --bg-dark: #1e241e; --text-dark: #111; --text-light: #f0ece2; --red: #f04f2a; --blue: #8cc0e8; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background-color: var(--bg-light); color: var(--text-dark); font-family: 'Outfit', 'Noto Sans SC', sans-serif; overflow-x: hidden; }
+  body.no-scroll { overflow: hidden; }
+
+  /* 主页首屏 */
+  .hero-section { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg-light); }
+  .hero-left { width: 48%; padding: 6rem 4rem 6rem 8rem; display: flex; flex-direction: column; justify-content: center; z-index: 10; }
+  .welcome-tag { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.15em; color: var(--red); text-transform: uppercase; margin-bottom: 1.5rem; }
+  .main-title { font-size: clamp(3.5rem, 5vw, 5.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -0.04em; text-transform: uppercase; margin-bottom: 2rem; }
+  .main-title .cn-name { display: block; font-size: clamp(2.5rem, 3.5vw, 3.5rem); margin-top: 0.5rem; letter-spacing: 0.1em; }
+  .intro-text { font-size: 1.05rem; color: #666; max-width: 480px; line-height: 2; margin-bottom: 3rem; text-align: justify; }
+  .intro-text strong { color: var(--text-dark); font-weight: 700; }
+  .action-group { display: flex; align-items: center; gap: 1rem; }
+  .btn-primary { background: var(--text-dark); color: #fff; padding: 1.2rem 2.5rem; border-radius: 50px; font-size: 1rem; font-weight: 700; border: none; cursor: pointer; transition: all 0.3s; }
+  .btn-primary:hover { background: var(--red); transform: scale(1.02); }
+  .btn-secondary { width: 56px; height: 56px; border-radius: 50%; background: var(--text-dark); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; border: none; transition: all 0.3s; }
+  .btn-secondary:hover { background: var(--blue); transform: rotate(45deg) scale(1.05); }
+
+  /* 主页照片墙 */
+  .hero-right { width: 52%; height: 100vh; overflow: hidden; position: relative; mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 0 4rem 0 2rem; }
+  .col { display: flex; flex-direction: column; gap: 1.5rem; height: max-content; }
+  @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+  @keyframes scrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0); } }
+  .col-1 { animation: scrollUp 25s linear infinite; }
+  .col-2 { animation: scrollDown 28s linear infinite; }
+  .col-3 { animation: scrollUp 22s linear infinite; }
+  .hero-right:hover .col { animation-play-state: paused; }
+  .card-basic { border-radius: 20px; overflow: hidden; width: 100%; }
+  .color-red { background: var(--red); } .color-blue { background: var(--blue); } .color-dark { background: var(--text-dark); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.5s; }
+  .photo:hover img { filter: grayscale(0%); }
+  .ratio-1 { aspect-ratio: 1/1; } .ratio-2 { aspect-ratio: 3/4; } .ratio-3 { aspect-ratio: 4/5; } .ratio-4 { aspect-ratio: 2/3; }
+
+  /* 🔥 修改的过渡图逻辑：按原比例，不裁剪，无文字 */
+  .transition-section { width: 100%; display: block; }
+  .transition-section img { width: 100%; height: auto; display: block; }
+
+  /* 菜单页 */
+  .works-section { background-color: #1e241e; background-image: url('images/bg.png'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; min-height: 100vh; display: flex; align-items: center; padding: 8rem 8rem; color: var(--text-light); }
+  .works-section::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.4) 100%); z-index: 1; }
+  .works-container { width: 100%; max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 4rem; position: relative; z-index: 2; }
+  .works-left { width: 35%; }
+  .works-left .subtitle { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: #ccc; margin-bottom: 1rem; }
+  .works-left h2 { font-size: clamp(3rem, 5vw, 4.5rem); font-weight: 900; margin-bottom: 1.5rem; line-height: 1.1; color: #fff; }
+  .works-left h2 span { color: var(--blue); }
+  .works-left p { font-size: 1rem; color: #e0e0e0; line-height: 1.7; max-width: 320px; }
+  .works-left::after { content: ''; display: block; width: 50px; height: 1px; background: #ccc; margin-top: 3rem; }
+  .works-right { width: 65%; display: flex; gap: 1.5rem; align-items: center; justify-content: flex-end; }
+  .work-card { width: 260px; border-radius: 30px; position: relative; cursor: pointer; overflow: hidden; transition: transform 0.4s, box-shadow 0.4s; box-shadow: 0 20px 40px rgba(0,0,0,0.6); background-size: cover; background-position: center; }
+  .work-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+  .work-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4)); transition: opacity 0.3s; }
+  .work-card:hover::before { opacity: 0; }
+  .tag { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.95); color: #111; padding: 0.5rem 1.2rem; border-radius: 50px; font-weight: 700; z-index: 10; }
+  .card-1 { height: 360px; } .card-2 { height: 440px; margin-top: -40px; } .card-3 { height: 360px; }
+
+  /* 联系我 */
+  .contact-section { background-color: #0f172a; color: #f0ece2; min-height: 80vh; padding: 8rem 8rem 6rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6rem; overflow: hidden; position: relative; }
+  .contact-text { flex: 1; min-width: 300px; max-width: 600px; z-index: 3; }
+  .contact-text .subtitle { color: var(--red); font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem; font-weight: 700; }
+  .contact-text h2 { font-family: 'Playfair Display', serif; font-size: clamp(4rem, 8vw, 7rem); line-height: 1.1; color: #ffffff; margin-bottom: 2rem; }
+  .contact-text p { color: #a0a09e; font-size: 1.1rem; max-width: 450px; line-height: 1.8; margin-bottom: 3rem; }
+  .contact-btn { display: inline-block; background: var(--red); color: #ffffff; text-decoration: none; padding: 1.2rem 3rem; border-radius: 50px; font-size: 1.1rem; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(240, 79, 42, 0.2); }
+  .contact-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(240, 79, 42, 0.4); }
+  .contact-vinyl-wrapper { position: absolute; right: -150px; top: 50%; transform: translateY(-50%); width: 650px; height: 650px; z-index: 1; }
+  .contact-vinyl { width: 100%; height: 100%; border-radius: 50%; background: repeating-radial-gradient(circle at center, #0f172a 0%, #1a2542 2%, #0f172a 3%, #1a2542 4%, #0f172a 5%); box-shadow: -20px 0 60px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; animation: spinVinylContact 20s linear infinite; }
+  .contact-vinyl::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, rgba(140,192,232,0.1) 45deg, transparent 90deg, rgba(240,79,42,0.05) 135deg, transparent 180deg, rgba(255,255,255,0.05) 270deg, transparent 360deg); mix-blend-mode: screen; z-index: 1; }
+  .contact-vinyl::after { content: ''; position: absolute; width: 280px; height: 280px; background: #fff; border-radius: 50%; border: 10px solid #0f172a; background-image: url('images/friend1.png'); background-size: cover; background-position: center; z-index: 3; }
+  @keyframes spinVinylContact { 100% { transform: rotate(360deg); } }
+  .contact-footer { width: 100%; margin-top: auto; padding-top: 4rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; color: #666666; font-size: 0.85rem; z-index: 3; }
+
+  /* ================= 弹窗通用 ================= */
+  .page-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-light); z-index: 9999; opacity: 0; visibility: hidden; transform: translateY(100px) scale(0.98); transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); overflow-y: auto; overflow-x: hidden; }
+  .page-overlay.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+  .bottom-nav { display: flex; justify-content: space-between; align-items: center; padding: 4rem 8rem; background: #eae7e1; margin-top: auto; }
+  .btn-nav-outline { padding: 1rem 2rem; border: 2px solid var(--text-dark); border-radius: 50px; background: transparent; color: var(--text-dark); font-weight: 700; cursor: pointer; transition: all 0.3s; }
+  .btn-nav-outline:hover { background: var(--text-dark); color: #fff; }
+  .btn-nav-solid { padding: 1rem 2rem; border: none; border-radius: 50px; background: var(--red); color: #fff; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+  .btn-nav-solid:hover { background: var(--text-dark); transform: scale(1.05); }
+
+  /* ================= 视觉详情页 ================= */
+  #visual-page .split-layout { display: flex; max-width: 1400px; margin: 0 auto; padding: 6rem 4rem; gap: 4rem; align-items: stretch; position: relative; }
+  #visual-page .split-layout::before { content: ''; position: absolute; left: 46%; top: 5%; bottom: 5%; width: 1px; border-left: 1px dashed rgba(0,0,0,0.1); z-index: 0; }
+  #visual-page .left-content { width: 46%; z-index: 2; display: flex; flex-direction: column; }
+  #visual-page .report-header { margin-bottom: 2rem; border-bottom: 2px solid var(--text-dark); padding-bottom: 1rem; }
+  #visual-page .report-header h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
+  #visual-page .report-meta { display: flex; gap: 1rem; font-size: 0.85rem; font-weight: 700; color: var(--red); }
+  #visual-page .professional-block { margin-bottom: 2rem; }
+  #visual-page .professional-block h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; text-transform: uppercase; color: var(--text-dark); display: flex; align-items: center; gap: 0.5rem; }
+  #visual-page .professional-block h3::before { content: '▪'; color: var(--blue); font-size: 1.2rem; }
+  #visual-page .professional-block p { font-size: 0.95rem; color: #555; line-height: 1.8; margin-bottom: 0.5rem; }
+  #visual-page .professional-block strong { color: var(--text-dark); font-weight: 600; }
+  #visual-page .deliverables-list { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;}
+  #visual-page .deliverables-list li { font-size: 0.95rem; color: #555; line-height: 1.6; position: relative; padding-left: 1rem;}
+  #visual-page .deliverables-list li::before { content: '→'; color: var(--red); position: absolute; left: 0; font-weight: 700;}
+  #visual-page .deliverables-list strong { color: var(--text-dark); }
+  #visual-page .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 2rem 0; }
+  #visual-page .video-card { position: relative; display: block; text-decoration: none; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; }
+  #visual-page .video-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+  #visual-page .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+  #visual-page .video-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; color: #fff; backdrop-filter: blur(2px); }
+  #visual-page .video-card:hover .video-overlay { opacity: 1; }
+  #visual-page .play-icon { width: 40px; height: 40px; border: 1px solid #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 0.5rem; }
+  #visual-page .video-overlay span { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; letter-spacing: 1px;}
+  #visual-page .video-card .v-title { padding: 0.8rem; font-size: 0.8rem; font-weight: 700; display: flex; justify-content: space-between; background: #fff; }
+  #visual-page .video-card .v-title span { color: var(--red); }
+  #visual-page .quote-block { border-top: 1px solid #ddd; padding-top: 1.5rem; margin-top: auto; }
+  #visual-page .quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.3rem; line-height: 1.4; }
+  #visual-page .quote span { color: var(--blue); }
+  #visual-page .right-gallery { width: 54%; z-index: 1; display: flex; flex-direction: column; }
+  #visual-page .gallery-columns { display: flex; gap: 1.5rem; flex-grow: 1; margin-bottom: 1.5rem; overflow: hidden; position: relative; height: 75vh; mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); }
+  #visual-page .gallery-col { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+  #visual-page .col-up { animation: scrollUp 40s linear infinite; }
+  #visual-page .col-down { animation: scrollDown 45s linear infinite; }
+  #visual-page .gallery-columns:hover .gallery-col { animation-play-state: paused; }
+  #visual-page .gallery-item { background: #fff; padding: 0.8rem; border-radius: 12px; cursor: zoom-in; transition: transform 0.3s; display: flex; flex-direction: column; }
+  #visual-page .gallery-item:hover { transform: scale(1.02); z-index: 10;}
+  #visual-page .gallery-item img { width: 100%; height: 280px; object-fit: cover; background: #e8e8e8; border-radius: 6px; display: block; }
+  #visual-page .gallery-item .caption { font-size: 0.8rem; color: #666; text-align: center; margin-top: 0.6rem; }
+  #visual-page .wide-placeholder-box { flex-grow: 0; height: 220px; background: #fff; padding: 0.8rem; border-radius: 12px; cursor: zoom-in; }
+  #visual-page .wide-placeholder-box img { width: 100%; height: 100%; object-fit: cover; background: #e8e8e8; border-radius: 6px; display: block; }
+  #visual-page .section-divider { text-align: center; padding: 6rem 2rem; background: #eae7e1; }
+  #visual-page .section-divider h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: #555; }
+  #visual-page .section-divider p { font-size: 0.9rem; color: #888; margin-top: 0.5rem; letter-spacing: 0.2em; }
+  #visual-page .section-news { background: #f4f5f7; }
+  #visual-page .section-news .news-list { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;}
+  #visual-page .section-news .news-list li { background: #fff; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--blue); font-size: 0.95rem; color: #555; line-height: 1.6; }
+  #visual-page .section-news .news-list strong { color: var(--text-dark); display: block; margin-bottom: 0.3rem;}
+  #visual-page .section-news .news-list span { font-size: 0.8rem; color: #888; display: block; }
+  #visual-page .section-news .gallery-item img { height: 450px; }
+
+  /* ================= Audio Page CSS ================= */
+  #audio-page { background: var(--bg-light); }
+  #audio-page .hero { position: relative; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fff; }
+  #audio-page .top-meta { position: absolute; top: 2rem; left: 4rem; right: 4rem; display: flex; justify-content: space-between; font-size: 0.75rem; letter-spacing: 0.1em; color: #888; font-weight: 600; }
+  #audio-page .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 6rem); font-style: italic; white-space: nowrap; position: absolute; top: 40%; transform: translateY(-50%); z-index: 1; color: var(--text-dark); display: flex; justify-content: center; align-items: center; gap: 6vw; width: 100%; }
+  #audio-page .hero h1 span { color: var(--text-dark); font-size: 1em; font-style: italic; letter-spacing: 0.05em; display: inline-block; }
+  #audio-page .record-player-img { position: relative; z-index: 2; width: 400px; max-width: 80%; margin-top: -10vh; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.2)); mix-blend-mode: multiply; }
+  #audio-page .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.19, 1, 0.22, 1); }
+  #audio-page .reveal.active { opacity: 1; transform: translateY(0); }
+  #audio-page .common-play-btn { display: inline-flex; align-items: center; gap: 12px; background: var(--text-dark); color: #fff; border: none; padding: 1.1rem 2.5rem; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; width: fit-content; box-shadow: 0 10px 30px rgba(0,0,0,0.1); font-family: 'Outfit', 'Noto Sans SC', sans-serif; }
+  #audio-page .common-play-btn:hover { background: var(--red); transform: translateY(-3px); box-shadow: 0 15px 40px rgba(240,79,42,0.3); }
+  #audio-page .text-divider { background: #fff; padding: 10rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea; }
+  #audio-page .text-divider .red-line { width: 2px; height: 50px; background: var(--red); margin-bottom: 2.5rem; }
+  #audio-page .text-divider h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.5rem); color: var(--text-dark); line-height: 1.4; letter-spacing: 0.05em; margin-bottom: 1rem; }
+  #audio-page .text-divider p { font-family: 'Outfit', sans-serif; color: #888; font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  #audio-page .section-doc { padding: 10rem 8rem; background: var(--bg-light); max-width: 1600px; margin: 0 auto; }
+  #audio-page .doc-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
+  #audio-page .doc-text { z-index: 10; display: flex; flex-direction: column; }
+  #audio-page .doc-text .subtitle { font-size: 0.9rem; letter-spacing: 0.2em; color: #888; text-transform: uppercase; margin-bottom: 1rem; font-weight: 600; }
+  #audio-page .doc-text .work-title { font-size: 1.1rem; font-weight: 700; color: var(--red); margin-bottom: 2rem; display: block; }
+  #audio-page .doc-text h2 { font-family: 'Playfair Display', serif; font-size: 3.5rem; line-height: 1.2; margin-bottom: 2rem; letter-spacing: -0.02em; }
+  #audio-page .doc-text p { font-size: 1.05rem; color: #555; line-height: 2; margin-bottom: 1.5rem; text-align: justify; }
+  #audio-page .doc-text strong { color: var(--text-dark); font-weight: 600; }
+  #audio-page .doc-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+  #audio-page .vinyl-wrapper { width: 100%; max-width: 450px; aspect-ratio: 1 / 1; animation: dropVinyl 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+  #audio-page .vinyl-record { width: 100%; height: 100%; border-radius: 50%; background: repeating-radial-gradient(circle at center, #111 0%, #222 2%, #111 3%, #2a2a2a 4%, #111 5%); box-shadow: 0 20px 50px rgba(0,0,0,0.2), inset 0 0 40px rgba(0,0,0,0.8); position: relative; display: flex; justify-content: center; align-items: center; animation: spinVinyl 15s linear 1.5s infinite; }
+  #audio-page .vinyl-record::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, rgba(140,192,232,0.2) 45deg, transparent 90deg, rgba(240,79,42,0.1) 135deg, transparent 180deg, rgba(255,255,255,0.1) 270deg, transparent 360deg); mix-blend-mode: screen; }
+  #audio-page .vinyl-center { position: absolute; width: 35%; height: 35%; background: #fff; border-radius: 50%; border: 12px solid #111; box-shadow: inset 0 0 20px #000; background-image: url('images/friend1.png'); background-size: cover; background-position: center; z-index: 3; }
+  @keyframes spinVinyl { 100% { transform: rotate(360deg); } }
+  @keyframes dropVinyl { 0% { transform: translateY(-200px) scale(0.8); opacity: 0; } 60% { transform: translateY(20px) scale(1.02); opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+  #audio-page .doc-gallery-wrapper { background: #fff; padding: 8rem 2rem; position: relative; z-index: 4; }
+  #audio-page .doc-frame { width: 100%; height: 500px; position: relative; max-width: 1600px; margin: 0 auto; }
+  #audio-page .gallery-img { position: absolute; object-fit: cover; border-radius: 4px; border: 12px solid #fff; background: #fff; box-shadow: 0 15px 40px rgba(0,0,0,0.15); opacity: 0; transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); filter: grayscale(100%); transform: translateY(80px); }
+  #audio-page .gallery-img:hover { transform: scale(1.05) translateY(0) !important; z-index: 99; box-shadow: 0 25px 50px rgba(0,0,0,0.3); filter: grayscale(0%); }
+  #audio-page .gallery-img:nth-child(1) { width: 220px; height: 300px; top: 20px; left: 0%; transition-delay: 0.2s; }
+  #audio-page .gallery-img:nth-child(2) { width: 250px; height: 350px; top: 100px; left: 14%; transition-delay: 0.8s; }
+  #audio-page .gallery-img:nth-child(3) { width: 280px; height: 380px; top: 0px; left: 30%; transition-delay: 1.4s; z-index: 2; }
+  #audio-page .gallery-img:nth-child(4) { width: 220px; height: 280px; top: 130px; left: 48%; transition-delay: 2.0s; }
+  #audio-page .gallery-img:nth-child(5) { width: 260px; height: 350px; top: 40px; left: 62%; transition-delay: 2.6s; }
+  #audio-page .gallery-img:nth-child(6) { width: 230px; height: 300px; top: 150px; left: 78%; transition-delay: 3.2s; }
+  #audio-page .gallery-img:nth-child(7) { width: 250px; height: 330px; top: 60px; left: 90%; transition-delay: 3.8s; }
+  #audio-page .doc-frame.active .gallery-img { opacity: 1; transform: translateY(0); }
+  #audio-page .section-city { padding: 10rem; background: #fff; }
+  #audio-page .city-header { text-align: center; margin-bottom: 5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+  #audio-page .city-intro { font-size: 1.1rem; color: #555; line-height: 2; text-align: justify; padding: 2rem 2.5rem; background: var(--bg-light); border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; margin-bottom: 2rem; }
+  #audio-page .city-intro strong { color: var(--text-dark); font-weight: 700; }
+  #audio-page .tracks-container { max-width: 1000px; margin: 0 auto 5rem; }
+  #audio-page .audio-track { display: flex; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding: 1.5rem 0; transition: 0.3s; }
+  #audio-page .audio-track:hover { transform: translateX(10px); }
+  #audio-page .track-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; margin-right: 2rem; flex-shrink: 0; }
+  #audio-page .track-info { width: 250px; flex-shrink: 0; }
+  #audio-page .track-info h4 { font-size: 1.2rem; margin-bottom: 0.4rem; font-weight: 700; }
+  #audio-page .track-info p { font-size: 0.9rem; color: #888; }
+  #audio-page .track-wave { flex-grow: 1; height: 50px; display: flex; align-items: center; gap: 3px; opacity: 0.8; }
+  #audio-page .wave-bar { width: 4px; border-radius: 2px; animation: waveBounce 1s infinite alternate; }
+  #audio-page .track-1 .track-icon { background: rgba(240,79,42,0.1); color: var(--red); }
+  #audio-page .track-1 .wave-bar { background: var(--red); }
+  #audio-page .track-2 .track-icon { background: rgba(140,192,232,0.2); color: #3b6990; }
+  #audio-page .track-2 .wave-bar { background: #3b6990; animation-duration: 1.5s; }
+  #audio-page .track-3 .track-icon { background: rgba(17,17,17,0.1); color: #111; }
+  #audio-page .track-3 .wave-bar { background: #111; animation-duration: 2s; }
+  @keyframes waveBounce { 0% { height: 15%; } 100% { height: 100%; } }
+  #audio-page .city-text-notes { max-width: 900px; margin: 0 auto; padding: 3rem 4rem; background: var(--bg-light); border-left: 4px solid var(--red); }
+  #audio-page .city-text-notes h3 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 1.5rem; color: var(--text-dark); }
+  #audio-page .city-text-notes p { font-size: 1.05rem; color: #555; line-height: 2; margin-bottom: 1.5rem; text-align: justify; }
+  #audio-page .city-text-notes strong { color: var(--text-dark); font-weight: 700; }
+  #audio-page .section-podcast { padding: 10rem 8rem; display: flex; justify-content: space-between; align-items: center; gap: 4rem; max-width: 1400px; margin: 0 auto; min-height: 100vh; background: var(--bg-light); }
+  #audio-page .podcast-text { z-index: 2; width: 50%; display: flex; flex-direction: column; }
+  #audio-page .podcast-text .subtitle { color: var(--red); font-size: 0.9rem; letter-spacing: 0.3em; font-weight: 700; text-transform: uppercase; margin-bottom: 1.5rem; }
+  #audio-page .podcast-text h2 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 3.5vw, 3.5rem); line-height: 1.2; margin-bottom: 2rem; color: var(--text-dark); }
+  #audio-page .podcast-intro { font-size: 1.1rem; color: var(--text-dark); line-height: 1.8; margin-bottom: 1.5rem; font-weight: 500; }
+  #audio-page .podcast-text p { font-size: 1rem; color: #555; line-height: 2; margin-bottom: 1.2rem; text-align: justify; }
+  #audio-page .podcast-text strong { color: var(--text-dark); font-weight: 700; }
+  #audio-page .podcast-visual { position: relative; width: 45%; height: 550px; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; }
+  #audio-page .podcast-script { position: absolute; background: #fff; padding: 2.2rem; border-radius: 4px; box-shadow: -15px 25px 50px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); color: #111; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1); width: 100%; max-width: 360px; }
+  #audio-page .podcast-script:hover { transform: translateY(-5px) scale(1.02) rotate(0deg) !important; box-shadow: -20px 35px 60px rgba(0,0,0,0.15); z-index: 10; }
+  #audio-page .podcast-script .tape { position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(2deg); width: 100px; height: 28px; background: rgba(255,255,255,0.8); backdrop-filter: blur(2px); border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+  #audio-page .podcast-script h4 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.5rem; color: #111; line-height: 1.3;}
+  #audio-page .podcast-script .ep { font-size: 0.8rem; color: var(--red); margin-bottom: 0.8rem; display: block; letter-spacing: 0.1em; font-weight: 700;}
+  #audio-page .podcast-script p { font-size: 0.9rem; color: #444; line-height: 1.7; text-align: justify; }
+  #audio-page .podcast-script p span { font-style: italic; color: #111; font-weight: 700; }
+  #audio-page .script-1 { top: 0; right: 30px; transform: rotate(-3deg); z-index: 1; }
+  #audio-page .script-2 { bottom: 0; right: 0; transform: rotate(4deg); z-index: 2; }
+
+  /* ================= 排版页 ================= */
+  #editorial-page { background: #f6f5f1; }
+  #editorial-page .container { max-width: 1200px; margin: 0 auto; padding: 8rem 4rem; }
+  #editorial-page .header { text-align: center; margin-bottom: 5rem; }
+  #editorial-page .header h1 { font-family: 'Outfit', sans-serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 900; margin-bottom: 1.5rem; }
+  #editorial-page .header p { color: #666; font-size: 1.1rem; max-width: 700px; margin: 0 auto; line-height: 1.8; }
+  #editorial-page .capabilities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 8rem; }
+  #editorial-page .cap-card { background: #fff; padding: 2rem; border-radius: 20px; border-top: 4px solid var(--blue); }
+  #editorial-page .cap-card:nth-child(2) { border-top-color: var(--red); }
+  #editorial-page .cap-card h4 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.8rem; }
+  #editorial-page .case-study { margin-bottom: 8rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 4rem; }
+  #editorial-page .case-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+  #editorial-page .case-title { font-size: 1.5rem; font-weight: 700; }
+  #editorial-page .case-tags { display: flex; gap: 0.8rem; }
+  #editorial-page .case-tags span { font-size: 0.75rem; padding: 0.3rem 1rem; background: #eee; border-radius: 20px; }
+  #editorial-page .bilingual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 2rem; }
+  #editorial-page .panel h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+  #editorial-page .panel .source-info { font-size: 0.8rem; color: #666; margin-bottom: 1.5rem; border-bottom: 1px dashed #ccc; padding-bottom: 1rem; }
+  #editorial-page .panel-cn { font-family: 'Noto Sans SC', sans-serif; color: #444; line-height: 1.8; font-size: 1rem; }
+  #editorial-page .panel-cn .highlight { background: rgba(240, 79, 42, 0.1); padding: 0.1rem 0.3rem; border-radius: 3px; }
+  #editorial-page .panel-en { font-family: 'Outfit', sans-serif; line-height: 1.8; font-size: 1rem; }
+  #editorial-page .panel-en .highlight { background: rgba(140, 192, 232, 0.3); padding: 0.1rem 0.3rem; border-radius: 3px; }
+  #editorial-page .editorial-note { background: var(--bg-dark); color: #fff; padding: 3rem; border-radius: 20px; margin-top: 2rem; }
+  #editorial-page .editorial-note h3 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--blue); }
+  #editorial-page .note-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  #editorial-page .note-item { border-left: 2px solid var(--red); padding-left: 1rem; }
+  #editorial-page .note-item .cn { font-size: 0.9rem; color: #999; text-decoration: line-through; }
+  #editorial-page .note-item .en { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  #editorial-page .small-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  #editorial-page .small-case { display: flex; flex-direction: column; gap: 1rem; }
+  #editorial-page .small-case .quote-box { background: #fff; padding: 1.5rem; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; }
+  #editorial-page .small-case .quote-box strong { color: var(--red); }
+
+  /* ================= 全局交互 ================= */
+  #cursor-tooltip { position: fixed; background: rgba(0,0,0,0.85); color: #fff; padding: 0.5rem 1rem; border-radius: 30px; font-size: 0.9rem; font-weight: 700; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10005; transform: translate(15px, 15px); }
+  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 10010; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 2rem; }
+  .lightbox.active { opacity: 1; pointer-events: auto; }
+  .lightbox img { max-width: 90%; max-height: 95vh; border-radius: 8px; background: #fff; object-fit: contain; }
+  .close-btn { position: absolute; top: 2rem; right: 3rem; color: #fff; font-size: 3rem; cursor: pointer; }
+
+  @media (max-width: 1024px) {
+    .hero-section { flex-direction: column; height: auto; }
+    .hero-left { width: 100%; padding: 8rem 2rem 3rem; text-align: center; }
+    .intro-text { margin: 0 auto 2rem; text-align: center; }
+    .action-group { justify-content: center; }
+    .hero-right { width: 100%; height: 60vh; padding: 0 1rem; grid-template-columns: repeat(2, 1fr); }
+    .col-3 { display: none; }
+    .works-section { padding: 4rem 2rem; background-attachment: scroll; }
+    .works-container { flex-direction: column; gap: 3rem; }
+    .works-left { width: 100%; text-align: center; }
+    .works-left::after { margin: 3rem auto 0; }
+    .works-right { width: 100%; flex-direction: row; overflow-x: auto; justify-content: flex-start; padding-bottom: 2rem; }
+    .work-card { flex-shrink: 0; margin-top: 0 !important;}
+    .contact-section { padding: 6rem 2rem; flex-direction: column; text-align: center; }
+    .contact-vinyl-wrapper { position: relative; right: 0; top: 0; transform: none; width: 300px; height: 300px; margin: 4rem auto 0; }
+    .contact-footer { flex-direction: column; gap: 1rem; text-align: center; }
+    #visual-page .split-layout { flex-direction: column; padding: 4rem 1.5rem; }
+    #visual-page .split-layout::before { display: none; }
+    #visual-page .left-content, #visual-page .right-gallery { width: 100%; }
+    #visual-page .gallery-columns { height: 70vh; }
+    #audio-page .section-doc, #audio-page .section-city { padding: 8rem 2rem; }
+    #audio-page .doc-layout { grid-template-columns: 1fr; gap: 4rem; }
+    #audio-page .doc-text { text-align: center; align-items: center; }
+    #audio-page .doc-text p { text-align: center; }
+    #audio-page .doc-frame { height: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    #audio-page .gallery-img { position: relative; width: calc(50% - 1rem) !important; height: 200px !important; top: auto !important; left: auto !important; opacity: 1 !important; transform: none !important; }
+    #audio-page .audio-track { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    #audio-page .track-wave { width: 100%; }
+    #audio-page .section-podcast { flex-direction: column; padding: 8rem 2rem; gap: 6rem; }
+    #audio-page .podcast-text { width: 100%; max-width: 100%; }
+    #audio-page .podcast-visual { width: 100%; align-items: center; height: auto; position: static; display: flex; flex-direction: column; gap: 2rem; }
+    #audio-page .podcast-script { position: relative; top: auto; bottom: auto; right: auto; transform: none !important; width: 100%; max-width: 500px; }
+    #editorial-page .container { padding: 6rem 2rem; }
+    #editorial-page .capabilities-grid, #editorial-page .bilingual-grid, #editorial-page .note-list, #editorial-page .small-cases { grid-template-columns: 1fr; gap: 2rem; }
+    .bottom-nav { padding: 4rem 2rem; flex-direction: column; gap: 1rem; }
+    .btn-nav-outline, .btn-nav-solid { width: 100%; }
+  }
+  /* 专门用来调整 banner 图片位置的补充代码 */
+  #visual-page .wide-placeholder-box img {
+    object-position: center 70% !important;
+  }
+</style>
+</head>
+<body>
+  <!-- 主页 -->
+  <main id="home-page">
+    <header class="hero-section">
+      <div class="hero-left">
+        <div class="welcome-tag">Welcome to my portfolio.</div>
+        <h1 class="main-title">YINZHI TANG<span class="cn-name">唐茵芷</span></h1>
+        <p class="intro-text">
+          聚焦文字、视觉与声音的深度融合，提供从策划到后期制作的全链路内容创作。<br><br>
+          游走于<strong>理性的严谨</strong>与<strong>感性的共鸣</strong>之间，让每一份作品都拥有直击人心的力量。
+        </p>
+        <div class="action-group">
+          <button class="btn-primary" onclick="document.getElementById('works').scrollIntoView({behavior: 'smooth'})">Explore Works</button>
+          <button class="btn-secondary" onclick="document.getElementById('works').scrollIntoView({behavior: 'smooth'})">➔</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="col col-1">
+          <div class="card-basic photo ratio-2"><img src="images/home1.png" alt="photo"></div>
+          <div class="card-basic color-red ratio-1"></div>
+          <div class="card-basic photo ratio-3"><img src="images/home2.png" alt="photo"></div>
+          <div class="card-basic photo ratio-2"><img src="images/home1.png" alt="photo"></div>
+          <div class="card-basic color-red ratio-1"></div>
+          <div class="card-basic photo ratio-3"><img src="images/home2.png" alt="photo"></div>
+        </div>
+        <div class="col col-2">
+          <div class="card-basic color-dark ratio-2"></div>
+          <div class="card-basic photo ratio-1"><img src="images/home3.png" alt="photo"></div>
+          <div class="card-basic color-blue ratio-4"></div>
+          <div class="card-basic color-dark ratio-2"></div>
+          <div class="card-basic photo ratio-1"><img src="images/home3.png" alt="photo"></div>
+          <div class="card-basic color-blue ratio-4"></div>
+        </div>
+        <div class="col col-3">
+          <div class="card-basic photo ratio-3"><img src="images/home4.png" alt="photo"></div>
+          <div class="card-basic color-blue ratio-2"></div>
+          <div class="card-basic photo ratio-2"><img src="images/home5.png" alt="photo"></div>
+          <div class="card-basic photo ratio-3"><img src="images/home6.png" alt="photo"></div>
+          <div class="card-basic photo ratio-3"><img src="images/home4.png" alt="photo"></div>
+          <div class="card-basic color-blue ratio-2"></div>
+          <div class="card-basic photo ratio-2"><img src="images/home5.png" alt="photo"></div>
+          <div class="card-basic photo ratio-3"><img src="images/home6.png" alt="photo"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 🔥 过渡图已去掉文字 -->
+    <section class="transition-section">
+      <img src="images/transition.png" alt="transition">
+    </section>
+
+    <section class="works-section" id="works">
+      <div class="works-container">
+        <div class="works-left">
+          <div class="subtitle">Selected Works / 2026</div>
+          <h2>Step into<br>my <span>Gallery.</span></h2>
+          <p>From audio to visuals, from layout to words. Every object holds a door to a unique story.</p>
+        </div>
+        <div class="works-right">
+          <div class="work-card card-1" onclick="openPage('visual-page')" style="background-image: url('https://images.unsplash.com/photo-1766941234613-db2d25e443cf?q=80&w=400');">
+            <div class="tag">Visual</div>
+          </div>
+          <div class="work-card card-2" onclick="openPage('audio-page')" style="background-image: url('https://images.unsplash.com/photo-1741041100433-207df1cbbf49?q=80&w=800');">
+            <div class="tag">Audio</div>
+          </div>
+          <div class="work-card card-3" onclick="openPage('editorial-page')" style="background-image: url('https://images.unsplash.com/photo-1791518662882-cb430bd59a3b?q=80&w=400');">
+            <div class="tag">Editorial</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="contact-section" id="contact">
+      <div class="contact-text">
+        <div class="subtitle">Get in touch</div>
+        <h2>Let's<br>Talk.</h2>
+        <p>如果你喜欢我的作品，或者有任何交流、合作的想法，欢迎随时发邮件给我。期待与你的共鸣。</p>
+        <a href="mailto:1392519122@qq.com" class="contact-btn">1392519122@qq.com</a>
+      </div>
+      <div class="contact-vinyl-wrapper"><div class="contact-vinyl"></div></div>
+      <div class="contact-footer">
+        <span>© 2026 YINZHI TANG. All Rights Reserved.</span>
+        <span>Based in Chengdu, China.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- 视觉详情页 -->
+  <div id="visual-page" class="page-overlay" data-lenis-prevent>
+    <section class="split-layout section-school">
+      <div class="left-content">
+        <div class="report-header">
+          <h1>校园新媒体与视觉纪实</h1>
+          <div class="report-meta"><span>👤 品宣中心宣传专员</span><span>📅 2025.07 - 至今</span></div>
+        </div>
+        <div class="professional-block">
+          <h3>The Challenge / 痛点与洞察</h3>
+          <p>传统的校园宣传往往陷入“宏大叙事”的套路。我在采访中发现，小学生最真实的感受是“操场很大，饭菜很香”。这比任何精心策划的文案都更有力量，促使我反思：有效的传播必须建立在对具体人群的尊重与理解之上。</p>
+        </div>
+        <div class="professional-block">
+          <h3>The Philosophy / 纪实理念</h3>
+          <p>好的宣传不应是刻意编排的亮点，而是对真实瞬间的敏锐捕捉。在镜头前，我拒绝制造“镜头霸凌”，不引导孩子去背诵空洞的脚本。我更希望他们接纳镜头、享受表达，展露最本真的童真——哪怕只是一张纯粹的笑脸，其力量也远胜过精心雕琢的文字。</p>
+        </div>
+        <div class="professional-block">
+          <h3>The Execution / 核心产出</h3>
+          <ul class="deliverables-list">
+            <li><strong>全媒体矩阵运营：</strong>主理“一周拾光”公众号排版，独立策划“星光教师”专访；并负责全平台招生宣发。</li>
+            <li><strong>全流程视频制作：</strong>独立完成白露节气、中秋挑战、一年级“满月”等视频的策划、拍摄与剪辑，培训小主播。</li>
+            <li><strong>大型活动统筹：</strong>负责秋季运动会、美好生活大会戏剧表演，以及成都教育发布“吕思颖”采访拍摄。</li>
+          </ul>
+        </div>
+        <div class="video-grid">
+          <!-- 🔥 视频1封面已替换为 video1.png -->
+          <a href="https://b23.tv/tw0gJpw" target="_blank" class="video-card">
+            <img src="images/video1.png" alt="运动会">
+            <div class="video-overlay"><div class="play-icon">▶</div><span>Watch Film ↗</span></div>
+            <div class="v-title">秋季运动会纪实 <span>↗</span></div>
+          </a>
+          <!-- 🔥 视频2封面已替换为 video2.png -->
+          <a href="https://b23.tv/tVcNaB3" target="_blank" class="video-card">
+            <img src="images/video2.png" alt="教师节">
+            <div class="video-overlay"><div class="play-icon">▶</div><span>Watch Film ↗</span></div>
+            <div class="v-title">教师节微纪录 <span>↗</span></div>
+          </a>
+        </div>
+        <div class="professional-block">
+          <h3>The Craft / 视听语言与后期</h3>
+          <p>除了前期的策划与拍摄，我也全面主导后期的“视听重构”。在运动会的剪辑中，我刻意运用<strong>宏大全景与情感特写的交替切换</strong>来构建画面张力；通过快慢结合的剪辑节奏调动观众情绪。</p>
+          <p>得益于播音与主持的专业背景，我亲自完成了所有视频的<strong>配音撰写与录制</strong>。用声音的温度为冷冰冰的画面注入灵魂，我相信优秀的视觉叙事，永远是画面与声音的交响。</p>
+        </div>
+        <div class="quote-block">
+          <div class="quote">"真正的传播是对话而非告知。<span>做减法，让内容本身说话。</span>"</div>
+        </div>
+      </div>
+      <div class="right-gallery">
+        <div class="gallery-columns">
+          <div class="gallery-col col-up">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport1.png"><div class="caption">校园纪实 / 运动瞬间</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport2.png"><div class="caption">摄影纪实 / 冲刺瞬间</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport3.png"><div class="caption">摄影纪实 / 胜利的喜悦</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport4.png"><div class="caption">校园纪实 / 运动瞬间</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport5.png"><div class="caption">摄影纪实 / 冲刺瞬间</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport6.png"><div class="caption">摄影纪实 / 胜利的喜悦</div></div>
+          </div>
+          <div class="gallery-col col-down">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport6.png"><div class="caption">校园纪实 / 现场采编记录</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport5.png"><div class="caption">摄影纪实 / 交接棒</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport4.png"><div class="caption">校园纪实 / 现场</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport3.png"><div class="caption">校园纪实 / 现场采编记录</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport2.png"><div class="caption">摄影纪实 / 交接棒</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/sport1.png"><div class="caption">校园纪实 / 现场</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="section-divider"><h2>From Empathy to Accuracy.</h2><p>从温情的校园纪实，到严谨的新闻现场</p></div>
+    <section class="split-layout section-news">
+      <div class="left-content">
+        <div class="report-header">
+          <h1>新闻采编与科技报道</h1>
+          <div class="report-meta"><span>👤 教育新闻采编实习生</span><span>📅 2025.06 - 2025.08</span></div>
+        </div>
+        <div class="professional-block">
+          <h3>The Challenge / 知识壁垒与信息转译</h3>
+          <p>在采访中国科学院成都生物研究所的新成果时，我敏锐地捕捉到科学家将“新型化学农药技术”类比为“女孩儿们用发酵淘米水可以剥落老旧角质”。这一绝妙的比喻，让我顺利将高深的化学知识转化为大众能听懂的语言。</p>
+          <p>这不仅仅是信息的降维，更是把老百姓与尖端科学连接起来的桥梁。它让科学不再高高在上，而是真正走进寻常百姓家。这也让我深刻意识到：<strong>传媒的职责，正是完成这从专业领域到大众认知的“最后一公里”翻译。</strong></p>
+        </div>
+        <div class="professional-block">
+          <h3>The Perspective / 城市品牌与民生视角</h3>
+          <p>不同于校园宣传的受众细分，作为天府新区党群部指导的核心阵地，<strong>天府发布</strong>承载着“国家级公园城市”形象塑造与新区动态传递的重任。在选题与撰写中，我兼顾宏观与微观：</p>
+          <p>一方面，用镜头与文字展现新区新风貌、新企业与前沿科技；另一方面，将硬核资讯转化为老百姓喜闻乐见的<strong>“吃喝玩乐一站式服务”</strong>及文体活动指南。我致力于让政务新媒体褪去严肃外衣，成为连接城市发展与市民生活的桥梁。</p>
+        </div>
+        <div class="professional-block">
+          <h3>The Philosophy / 新闻的严谨与客观</h3>
+          <p>在撰写 AI 投融资路演等科技与财经新闻时，我学会了保持高度的准确性。例如，我明确区分了企业提出的<strong>“融资需求（funding sought）”</strong>与最终实际获得的<strong>“投资结果（investment secured）”</strong>。不将目标等同于事实，是新闻从业者的底线。</p>
+        </div>
+        <div class="professional-block">
+          <h3>The Reality / 现场洞察与深度访谈</h3>
+          <p>在新闻一线，<strong>时效性</strong>是核心壁垒。这要求我在复杂的现场环境中，具备敏锐的素材捕捉力、高效的统筹力与高压下的极速成稿能力。</p>
+          <p>此外，专业的新闻采访拒绝浮于表面的泛泛而谈。面对硬核科技议题，我通过扎实的前期案头工作构建跨界知识储备，确保提问直击技术核心。这种建立在深刻认知上的<strong>“知识性访谈”</strong>，是突破浅层叙事、挖掘新闻深度的关键。</p>
+        </div>
+        <div class="professional-block">
+          <h3>The Execution / 核心发表作品</h3>
+          <ul class="news-list">
+            <li><strong>《人工智能前沿成果集中亮相，路演赋能产业升级》</strong>负责现场采访与稿件撰写，准确传达约 6.7 亿元的融资需求，区分了技术与资本的语境。<span>Published: 天府发布 | 记者：刘倩婷 唐茵芷</span></li>
+            <li><strong>《全国首个“文旅行业云”，落地天府新区》</strong>将行业黑话“B端/C端”转译为受众易懂的商业与游客视角，解释了数字化平台的服务逻辑。<span>Published: 天府发布 | 记者：刘倩婷 实习生：唐茵芷</span></li>
+            <li><strong>《传播非遗，这美好的生活不摆了》</strong>走进乡村，把非遗带给世界。<span>Published: 天府发布 | 记者：刘倩婷 实习生：唐茵芷</span></li>
+          </ul>
+        </div>
+        <div class="quote-block"><div class="quote">"科学并不遥远，传媒的力量不在于告诉别人‘科学家很伟大’，而在于<span>消融因身份与领域被筑起的隔阂。</span>"</div></div>
+      </div>
+      <div class="right-gallery">
+        <div class="gallery-columns">
+          <div class="gallery-col col-up">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news1.png"><div class="caption">政务新闻 / 城市人文风貌</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news2.png"><div class="caption">新闻报道 / 见报文稿截图</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news3.png"><div class="caption">科技报道 / 融资路演专版</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news1.png"><div class="caption">政务新闻 / 城市人文风貌</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news2.png"><div class="caption">新闻报道 / 见报文稿截图</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news3.png"><div class="caption">科技报道 / 融资路演专版</div></div>
+          </div>
+          <div class="gallery-col col-down">
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news4.png"><div class="caption">政务新闻 / 现代都市工业场景</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news5.png"><div class="caption">新区采风 / 现场纪实</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news5.png"><div class="caption">采编细节 / 现场文字记录</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news4.png"><div class="caption">政务新闻 / 现代都市工业场景</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news5.png"><div class="caption">新区采风 / 现场纪实</div></div>
+            <div class="gallery-item" onclick="openLightbox(this)"><img src="images/news5.png"><div class="caption">采编细节 / 现场文字记录</div></div>
+          </div>
+        </div>
+        <!-- 🔥 横幅图已替换为 banner.png -->
+        <div class="wide-placeholder-box" onclick="openLightbox(this)">
+          <img src="images/banner.png">
+          <div class="caption"></div>
+        </div>
+      </div>
+    </section>
+    <div class="bottom-nav">
+      <button class="btn-nav-outline" onclick="closeToWorks('visual-page')">← Return to Room</button>
+      <button class="btn-nav-solid" onclick="switchPage('visual-page', 'audio-page')">Next: Audio →</button>
+    </div>
+  </div>
+
+  <!-- 声音页 -->
+  <div id="audio-page" class="page-overlay" data-lenis-prevent>
+    <header class="hero">
+      <div class="top-meta"><span>INNER SANCTUARY</span><span>© YINZHI TANG.</span></div>
+      <h1>Step deep in my <span>inner sanctuary</span></h1>
+      <img class="record-player-img" src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=800&auto=format&fit=crop" alt="Record Player">
+    </header>
+
+    <section class="section-doc">
+      <div class="doc-layout">
+        <div class="doc-text reveal">
+          <span class="subtitle">01 / Voice Over & Narrative</span>
+          <span class="work-title">作品名：《廿年》· 友情纪录片（担任文字编辑 & 配音）</span>
+          <h2>隐匿自我，<br>用声音接住故事。</h2>
+          <p>纪录片配音，本质上是一场“声音的退让”。在《廿年》的创作中，我不仅完成了文字编辑，更担任了全片配音。我没有刻意去展现声音的技巧，而是先作为第一个观众，去洞察镜头背后的情感流动与人物羁绊。<strong>只有读懂了他们，我的声音才能成为画面最贴切的容器。</strong></p>
+          <p>我选择以第三人称的视角，娓娓道来。在语速与呼吸的设计上，我刻意放缓了节奏，留出足够的“听觉呼吸感”。<strong>润物细无声，是我对这部作品声音叙事的最高追求。</strong></p>
+        </div>
+        <div class="doc-visual">
+          <div class="vinyl-wrapper">
+            <div class="vinyl-record"><div class="vinyl-center"></div></div>
+          </div>
+          <button class="common-play-btn" style="margin-top: 2.5rem;" onclick="playAudio('友情纪录片.mp3', this)">
+            <span style="font-size:1.2rem;">▶</span> 聆听他们的故事
+          </button>
+        </div>
+      </div>
+    </section>
+      
+    <div class="doc-gallery-wrapper">
+      <div class="doc-frame" id="photo-gallery">
+        <img class="gallery-img" src="images/friend1.png" alt="照片1">
+        <img class="gallery-img" src="images/friend2.png" alt="照片2">
+        <img class="gallery-img" src="images/friend3.png" alt="照片3">
+        <img class="gallery-img" src="images/friend4.png" alt="照片4">
+        <img class="gallery-img" src="images/friend5.png" alt="照片5">
+        <img class="gallery-img" src="images/friend6.png" alt="照片6">
+        <img class="gallery-img" src="images/friend1.png" alt="照片7">
+      </div>
+    </div>
+
+    <div class="text-divider reveal">
+      <div class="red-line"></div>
+      <p style="color: var(--red); margin-bottom: 1rem;">02 / SOUND DESIGN</p>
+      <h2>声音，是听觉的造梦术。</h2>
+      <p style="margin-top: 1rem;">The Art of Auditory Dreamweaving.</p>
+    </div>
+
+    <section class="section-city">
+      <div class="city-header reveal">
+        <div class="city-intro">
+          这是我参与制作的城市宣传录音片段。<strong>城市宣传片不仅需要人声，更需要极其丰富的环境音（Foley）来构建空间感。</strong><br><br>在纯听觉的媒介里，听众失去了视觉，因此所有的画面都必须由声音来建构。
+        </div>
+      </div>
+      
+      <div class="tracks-container">
+        <div class="audio-track track-1 reveal" style="transition-delay: 0.1s;">
+          <div class="track-icon">🎙️</div>
+          <div class="track-info"><h4>人声主轨 (Voice)</h4><p>浑厚男声 / 经济上行张力</p></div>
+          <div class="track-wave" id="wave1"></div>
+        </div>
+        <div class="audio-track track-2 reveal" style="transition-delay: 0.2s;">
+          <div class="track-icon">🚄</div>
+          <div class="track-info"><h4>城市基建 (Ambience)</h4><p>钢筋水泥 / 地铁进站 / 高铁飞驰</p></div>
+          <div class="track-wave" id="wave2"></div>
+        </div>
+        <div class="audio-track track-3 reveal" style="transition-delay: 0.3s;">
+          <div class="track-icon">👦</div>
+          <div class="track-info"><h4>生活底噪 (Foley)</h4><p>孩童嬉闹 / 市井烟火</p></div>
+          <div class="track-wave" id="wave3"></div>
+        </div>
+      </div>
+
+      <div class="city-text-notes reveal" style="transition-delay: 0.4s;">
+        <h3>Let the Sound Draw the City</h3>
+        <p>在设计上，我并没有把所有声音揉杂在一起，而是进行了严格的层级划分：底层是钢筋混泥土的敲击声与从火车到高铁的轰鸣声，代表着城市大刀阔斧的基建跃迁；中层是地铁进站的风声，代表着流动的日常；高层是孩童的嬉闹声，那是城市的生命力。</p>
+        <p>当这一切被包裹在<strong>浑厚、充满张力的男声</strong>之中时，一种独属于“经济上行时期”的欣欣向荣感，便会在听众脑海中油然而生。</p>
+        <button class="common-play-btn" onclick="playAudio('城市宣传片背景音.mp3', this)">
+          <span style="font-size:1.2rem;">▶</span> 试听多轨混音版
+        </button>
+      </div>
+    </section>
+
+    <div class="text-divider reveal">
+      <div class="red-line"></div>
+      <p style="color: var(--red); margin-bottom: 1rem;">03 / Podcast</p>
+      <h2>以声造梦，也以声寻己。</h2>
+      <p style="margin-top: 1rem;">From creating the world to finding the self.</p>
+    </div>
+
+    <section class="section-podcast">
+      <div class="podcast-text reveal">
+        <h2>文字与音乐的<br>深夜庇护所。</h2>
+        <div class="podcast-intro">
+          这是我<strong>独立撰稿与配音</strong>的音乐播客。目前已完成六期节目，内容从华语乐坛横跨至欧美乐坛。
+        </div>
+        <p>在剥离了歌手和作词人的标签化信息后，我更想做的是，把文字与音乐结合起来，带给听众不一样的体悟。我始终认为，音乐播客不应该仅仅是“歌曲推荐”，<strong>歌曲与歌词带给我的情感共振，才是节目的灵魂。</strong></p>
+        <p>在每期内容中，我都会根据歌词的隐喻，结合歌手与作词人的真实经历，去做情感上的深度缝合。我希望我的文字，能让<strong>听众</strong>在其中找到自己的影子，产生共鸣。</p>
+        <button class="common-play-btn" onclick="playAudio('不为谁而作的歌.mp3', this)">
+          <span style="font-size:1.2rem;">▶</span> 聆听我的播客
+        </button>
+      </div>
+      
+      <div class="podcast-visual reveal" style="transition-delay: 0.2s;">
+        <div class="podcast-script script-1">
+          <div class="tape"></div>
+          <span class="ep">EP. 01 / 写给自己的歌</span>
+          <h4>《不为谁而作的歌》</h4>
+          <p>大众总在猜测这首歌究竟是写给爱情、亲情还是友情。但其实没有标准答案，每个人都可以代入自己的感情；如果找不到，也没关系。<span>这也可以是一首，写给自己的歌。</span></p>
+        </div>
+        <div class="podcast-script script-2">
+          <div class="tape"></div>
+          <span class="ep">EP. 04 / 向前看</span>
+          <h4>《后视镜里的月亮》</h4>
+          <p>汽车的挡风玻璃很大，后视镜却很小。我是说<span>往前看比往后看更重要，也更需要勇气。</span></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="bottom-nav">
+      <button class="btn-nav-outline" onclick="closeToWorks('audio-page')">← Return to Room</button>
+      <button class="btn-nav-solid" onclick="switchPage('audio-page', 'editorial-page')">Next: Editorial →</button>
+    </div>
+  </div>
+
+  <!-- 排版页 -->
+  <div id="editorial-page" class="page-overlay" data-lenis-prevent>
+    <div class="container">
+      <header class="header">
+        <div class="subtitle">Editorial & Bilingual Communication</div>
+        <h1>Mastering Tone and Context.</h1>
+        <p>从充满亲和力的校园新媒体，到严谨硬核的官方政务报道；从高质量的中文撰写，到精准跨文化语境的英文重构。这是我作为传播者的“文体驾驭力”与“双语表达力”。</p>
+      </header>
+      <div class="capabilities-grid">
+        <div class="cap-card"><h4>Warm & Engaging</h4><p>校园新媒体：擅长捕捉微小的情感共鸣，用亲和、有温度的文字与受众建立连接。</p></div>
+        <div class="cap-card"><h4>Rigorous & Professional</h4><p>官方新闻报道：准确拿捏政务与科技类稿件，在严肃语境下保持逻辑严密与信息清晰。</p></div>
+        <div class="cap-card"><h4>Bilingual Adaptation</h4><p>跨文化转译：不止是翻译，更是根据英语受众的文化背景，进行意义重构与信息降维。</p></div>
+      </div>
+      <section class="case-study">
+        <div class="case-header">
+          <div class="case-title">Case 01 / School Communication</div>
+          <div class="case-tags"><span class="tag-tone">Tone: Warm & Empathic</span><span class="tag-role">Role: Co-Editor</span></div>
+        </div>
+        <div class="bilingual-grid">
+          <div class="panel panel-cn">
+            <h3>学生成长 | 寻梦星光 乐享成长</h3>
+            <div class="source-info">Published: 11 Sep 2026 | 华阳中学附属小学</div>
+            <p>对于刚刚迈入小学校园的<span class="highlight">"小萌新"</span>们，这不仅是一次课程的初体验，更是一场关于发现与热爱的启蒙之旅。</p>
+            <br><p>本次嘉年华活动，正是学校践行<span class="highlight">"学生成长第一"</span>育人理念的生动缩影。</p>
+          </div>
+          <div class="panel panel-en">
+            <h3>A first look at school life through play and discovery</h3>
+            <div class="source-info">English Adaptation | Target: English-speaking parents</div>
+            <p>A course-experience carnival gave <span class="highlight">new primary pupils</span> and their families a chance to explore school life together.</p>
+            <br><p>The school presented the carnival as an expression of its commitment to <span class="highlight">putting pupils' development first</span>.</p>
+          </div>
+        </div>
+        <div class="editorial-note">
+          <h3>Editorial Strategy: Adapting for the Audience</h3>
+          <div class="note-list">
+            <div class="note-item"><div class="cn">"小萌新" (Internet slang)</div><div class="en">"new primary pupils"</div><div class="reason">保留了欢迎的语调，同时清晰交代了年龄段，避免文化背景带来的理解障碍。</div></div>
+            <div class="note-item"><div class="cn">"学生成长第一" (Slogan)</div><div class="en">"putting pupils' development first"</div><div class="reason">转化为自然流畅的英文行动表达，而不是生硬直译未经证实的官方口号。</div></div>
+          </div>
+        </div>
+      </section>
+      <section class="case-study">
+        <div class="case-header">
+          <div class="case-title">Case 02 & 03 / Official Reporting</div>
+          <div class="case-tags"><span class="tag-tone" style="background:rgba(240,79,42,0.1); color:var(--red);">Tone: Rigorous & Official</span><span class="tag-role">Role: Intern Reporter</span></div>
+        </div>
+        <div class="small-cases">
+          <div class="small-case">
+            <h4>Explaining a Specialised Digital Service</h4>
+            <div class="source-info">全国首个“文旅行业云”，落地天府新区</div>
+            <div class="quote-box">
+              <strong>Original:</strong> 为B端企业提供降本增效解决方案，为C端游客打造...<br><br>
+              <strong>Adapted:</strong> For <strong>businesses</strong>, the proposed services include data integration... For <strong>visitors</strong>, an AI travel assistant called Xiaoyun is described as offering personalised itineraries.
+            </div>
+            <p style="font-size: 0.85rem; color: #666;">编辑策略：将只有行业内人士懂的“B端/C端”缩写，直接替换为明确的“businesses”和“visitors”，降低阅读门槛，剥离未经独立验证的“全国首个”宣称。</p>
+          </div>
+          <div class="small-case">
+            <h4>Communicating an Investment Event Accurately</h4>
+            <div class="source-info">人工智能前沿成果集中亮相，路演赋能产业升级</div>
+            <div class="quote-box">
+              <strong>Original:</strong> 现场融资需求约6.7亿元。<br><br>
+              <strong>Adapted:</strong> The companies presented <strong>financing needs</strong> of approximately RMB 670 million. This figure describes <strong>funding sought</strong>, rather than investment secured.
+            </div>
+            <p style="font-size: 0.85rem; color: #666;">编辑策略：展现新闻的严谨性。明确区分“融资需求（sought）”与“实际获得投资（secured）”，不将提出的目标等同于已达成的事实。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="bottom-nav">
+      <button class="btn-nav-outline" onclick="closeToWorks('editorial-page')">← Return to Room</button>
+      <button class="btn-nav-solid" onclick="closeToContact('editorial-page')">Connect Me →</button>
+    </div>
+  </div>
+
+  <!-- 全局工具 -->
+  <div id="cursor-tooltip">Click to zoom in ↗</div>
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="close-btn">&times;</span>
+    <img id="lightbox-img" src="" alt="放大图片">
+  </div>
+  <audio id="myAudioPlayer"></audio>
+  <script>
+    // 1. 平滑滚动
+    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); } requestAnimationFrame(raf);
+    document.querySelectorAll('button[onclick*="scrollIntoView"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        const target = document.getElementById(targetId);
+        if(target) lenis.scrollTo(target);
+      });
+    });
+
+    // 2. 弹窗切换 & 停止音频逻辑
+    const audioPlayer = document.getElementById('myAudioPlayer');
+    let currentPlayingBtn = null;
+
+    function stopAllAudio() {
+      if (!audioPlayer.paused) { audioPlayer.pause(); }
+      audioPlayer.currentTime = 0;
+      if (currentPlayingBtn) {
+        const originalText = currentPlayingBtn.getAttribute('data-original-text') || '播放';
+        currentPlayingBtn.innerHTML = `<span style="font-size:1.2rem;">▶</span> ${originalText}`;
+        currentPlayingBtn = null;
+      }
+    }
+
+    function openPage(pageId) {
+      stopAllAudio(); 
+      document.getElementById(pageId).classList.add('active');
+      document.body.classList.add('no-scroll');
+      document.getElementById(pageId).scrollTop = 0; 
+    }
+    
+    function closeToWorks(pageId) {
+      stopAllAudio(); 
+      document.getElementById(pageId).classList.remove('active');
+      document.body.classList.remove('no-scroll');
+      setTimeout(() => { document.getElementById('works').scrollIntoView({ behavior: 'smooth' }); }, 100);
+    }
+    
+    function switchPage(currentPageId, nextPageId) {
+      stopAllAudio(); 
+      document.getElementById(currentPageId).classList.remove('active');
+      setTimeout(() => { document.getElementById(nextPageId).classList.add('active'); document.getElementById(nextPageId).scrollTop = 0; }, 400); 
+    }
+    
+    function closeToContact(pageId) {
+      stopAllAudio(); 
+      document.getElementById(pageId).classList.remove('active');
+      document.body.classList.remove('no-scroll');
+      setTimeout(() => { document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); }, 100);
+    }
+
+    // 3. 完美的音频播放与暂停控制
+    function playAudio(src, btn) {
+      if (currentPlayingBtn === btn) {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          btn.innerHTML = '<span style="font-size:1.2rem;">⏸</span> 暂停播放';
+        } else {
+          audioPlayer.pause();
+          const originalText = btn.getAttribute('data-original-text') || '播放';
+          btn.innerHTML = `<span style="font-size:1.2rem;">▶</span> ${originalText}`;
+        }
+        return;
+      }
+
+      stopAllAudio(); 
+      currentPlayingBtn = btn;
+      if (!btn.getAttribute('data-original-text')) {
+        const text = btn.innerText.replace('▶', '').trim();
+        btn.setAttribute('data-original-text', text);
+      }
+
+      audioPlayer.src = src;
+      audioPlayer.play().then(() => {
+        btn.innerHTML = '<span style="font-size:1.2rem;">⏸</span> 暂停播放';
+        audioPlayer.onended = () => {
+          const originalText = btn.getAttribute('data-original-text');
+          btn.innerHTML = `<span style="font-size:1.2rem;">▶</span> ${originalText}`;
+          currentPlayingBtn = null;
+        };
+      }).catch(err => {
+        console.log(err);
+        alert('播放失败！请确保本地文件夹里有名为 "' + src + '" 的音频文件。');
+        currentPlayingBtn = null;
+      });
+    }
+
+    // 4. Lightbox 放大与鼠标跟随
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const tooltip = document.getElementById('cursor-tooltip');
+    const zoomables = document.querySelectorAll('.gallery-item, .wide-placeholder-box');
+    zoomables.forEach(item => {
+      item.addEventListener('mouseenter', () => { tooltip.style.opacity = 1; });
+      item.addEventListener('mouseleave', () => { tooltip.style.opacity = 0; });
+      item.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.clientX + 'px'; tooltip.style.top = e.clientY + 'px';
+      });
+    });
+    function openLightbox(el) {
+      const img = el.querySelector('img');
+      if (img) { lightboxImg.src = img.src; lightbox.classList.add('active'); }
+    }
+    function closeLightbox() { lightbox.classList.remove('active'); }
+
+    // 5. 滚动动画和声波生成
+    function reveal() {
+      var reveals = document.querySelectorAll("#audio-page .reveal");
+      for (var i = 0; i < reveals.length; i++) {
+        var windowHeight = window.innerHeight;
+        var elementTop = reveals[i].getBoundingClientRect().top;
+        var elementVisible = 100;
+        if (elementTop < windowHeight - elementVisible) { reveals[i].classList.add("active"); }
+      }
+    }
+    window.addEventListener("scroll", reveal);
+    document.getElementById('audio-page').addEventListener("scroll", reveal);
+    reveal(); 
+
+    const gallery = document.getElementById('photo-gallery');
+    if(gallery) {
+      const galleryObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => { 
+          if (entry.isIntersecting) { gallery.classList.add('active'); observer.unobserve(gallery); } 
+        });
+      }, { threshold: 0.2 }); 
+      galleryObserver.observe(gallery);
+    }
+
+    function generateBars(containerId, count) {
+      const container = document.getElementById(containerId);
+      if(!container) return;
+      for (let i = 0; i < count; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'wave-bar';
+        bar.style.height = (Math.random() * 70 + 20) + '%';
+        bar.style.animationDelay = (Math.random() * 1) + 's';
+        container.appendChild(bar);
+      }
+    }
+    generateBars('wave1', 45); generateBars('wave2', 45); generateBars('wave3', 45);
+  </script>
+</body>
+</html>
